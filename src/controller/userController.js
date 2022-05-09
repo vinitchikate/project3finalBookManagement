@@ -7,8 +7,8 @@ const isValid = function (value) {
     if (typeof value == "string" && value.trim().length > 0) return true;
 };
 
-const isValidRequestBody = function (object) {
-    return Object.keys(object).length > 0;
+const isValidRequestBody = function (value) {
+    return Object.keys(value).length > 0;
 };
 
 const isValidEmail = function (email) {
