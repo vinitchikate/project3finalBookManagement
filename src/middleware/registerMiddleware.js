@@ -12,7 +12,7 @@ exports.validateIntern = [
     .isNumeric()
     .withMessage("invalid title : numbers not allowed")
     .isLength({ min: 1, max: 4 })
-    .withMessage("title must be within 4 to 20 characters"),
+    .withMessage("title must be within 1 to 4 characters"),
   check("name")
     .trim()
     .not()
@@ -74,7 +74,7 @@ exports.internValidationResult = (req, res, next) => {
 exports.validateInternDB = async (req, res, next) => {
   let data = req.body;
 
-  let numberCheck = await userModel.findOne({ phone: data.mobile });
+  let numberCheck = await userModel.findOne({ phone: data.phone });
   if (numberCheck) {
     return res.status(400).send({ status: false, msg: "Mobile Number Already Exists" });
   }
