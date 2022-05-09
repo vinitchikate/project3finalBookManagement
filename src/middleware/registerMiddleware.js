@@ -1,6 +1,5 @@
 const { check, validationResult } = require("express-validator");
-const userModel = require("../models/userModel")
-
+const userModel = require("../models/userModel");
 
 
 exports.validateIntern = [
@@ -14,7 +13,7 @@ exports.validateIntern = [
     .withMessage("invalid title : numbers not allowed")
     .isLength({ min: 1, max: 4 })
     .withMessage("title must be within 4 to 20 characters"),
-   check("name")
+  check("name")
     .trim()
     .not()
     .isEmpty()
@@ -72,25 +71,18 @@ exports.internValidationResult = (req, res, next) => {
   res.status(400).send({ status: false, msg: error });
 };
 
-exports.validateInternDB = async (req,res,next) =>{
+exports.validateInternDB = async (req, res, next) => {
   let data = req.body;
-   
 
   let numberCheck = await userModel.findOne({ phone: data.mobile });
-
-  if (numberCheck)
-    return res
-      .status(400)
-      .send({ status: false, msg: "Mobile Number Already Exists" });
+  if (numberCheck) {
+    return res.status(400).send({ status: false, msg: "Mobile Number Already Exists" });
+  }
 
   let emailCheck = await userModel.findOne({ email: data.email });
-
-  if (emailCheck)
-    return res
-      .status(400)
-      .send({ status: false, msg: "EmailId Already Exists" });
+  if (emailCheck) {
+    return res.status(400).send({ status: false, msg: "EmailId Already Exists" });
+  }
 
   next()
-
-}
-
+};
