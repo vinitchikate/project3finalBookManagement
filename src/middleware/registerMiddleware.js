@@ -38,15 +38,30 @@ exports.validateIntern = [
     .isNumeric()
     .isLength({ min: 10, max: 10 })
     .withMessage("invalid phone"),
-  check("address")
+  check("address.street")
     .trim()
     .not()
     .isEmpty()
-    .withMessage("address is a rquired field")
+    .withMessage("street is a rquired field")
     .not()
     .isNumeric()
     .withMessage("invalid  : numbers not allowed"),
-  
+  check("address.city")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("city is a rquired field")
+    .not()
+    .isNumeric()
+    .withMessage("invalid  : numbers not allowed"),
+  check("address.pincode")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("pincode is a rquired field")
+    .isNumeric()
+    .isLength({ min: 4, max: 20 })
+    .withMessage("pincode must be within 4 to 20 characters"),
 ];
 
 exports.internValidationResult = (req, res, next) => {
@@ -75,13 +90,7 @@ exports.validateInternDB = async (req,res,next) =>{
       .status(400)
       .send({ status: false, msg: "EmailId Already Exists" });
 
-  let addressCheck = await userModel.findOne({ address: data.address });
-
-  if (addressCheck)
-    return res
-      .status(400)
-      .send({ status: false, msg: "address Already Exists" });
-
   next()
 
 }
+

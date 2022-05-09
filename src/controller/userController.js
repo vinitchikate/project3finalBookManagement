@@ -19,6 +19,7 @@ const isValidEmail = function (email) {
 
 
 
+
 const createuser = async function(req, res) {
     try {
         let saveData = await userModel.create(req.body);
