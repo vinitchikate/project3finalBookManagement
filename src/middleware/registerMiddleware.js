@@ -13,7 +13,7 @@ exports.validateIntern = [
     .isNumeric()
     .withMessage("invalid title : numbers not allowed")
     .isLength({ min: 1, max: 4 })
-    .withMessage("name must be within 4 to 20 characters"),
+    .withMessage("title must be within 4 to 20 characters"),
    check("name")
     .trim()
     .not()
