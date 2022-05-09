@@ -2,7 +2,29 @@ const userModel = require('../models/userModel');
 const jwt = require("jsonwebtoken");
 
 
+<<<<<<< HEAD
 const createuser = async function (req, res) {
+=======
+const isValid = function (value) {
+    if (typeof value == "undefined" || value == null) return false;
+    if (typeof value == "string" && value.trim().length > 0) return true;
+};
+
+const isValidRequestBody = function (value) {
+    return Object.keys(value).length > 0;
+};
+
+const isValidEmail = function (email) {
+    const regexForEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return regexForEmail.test(email);
+};
+
+
+
+
+
+const createuser = async function(req, res) {
+>>>>>>> eb246a8e2f3aebac5464da30e6e352d35c6bb803
     try {
         let saveData = await userModel.create(req.body);
         res.status(201).send({ status: true, msg: saveData });
