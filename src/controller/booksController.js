@@ -166,4 +166,32 @@ const updatebook = async function (req, res) {
 
 
 
-module.exports = { createBook, getbookId, booksList, updatebook };
+///////////////////////////DeleteBook////////////////////////////////////////////////////////////
+const deleteBooks = async function (req, res) {
+    try {
+        const bookId = req.params.bookId
+        const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false })      //finding the bookId
+        if (!IsValidBookId) {
+            return res.status(404).send({ status: true, msg: "No book found." })
+        }
+
+        if (IsValidBookId.userId != req.userId) {        //validating that the userId from body is similar to the token
+            return res.status(401).send({ status: false, message: "Unauthorized access." })
+        }
+
+        const deletedDetails = await bookModel.findOneAndUpdate(
+            { _id: bookId },    //finding the bookId and mark the isDeleted to true & update the date at deletedAt.
+            { isDeleted: true, deletedAt: new Date() },
+            { new: true })
+        res.status(201).send({ status: true, msg: "Book deleted successfully", data: deletedDetails })
+    }
+
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ msg: err.message })
+    }
+}
+
+
+
+module.exports = { createBook, getbookId, booksList, updatebook, deleteBooks };

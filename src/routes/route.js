@@ -17,7 +17,7 @@ router.post("/books", auth.authentication, valid.validBook, booksController.crea
 router.get("/books", auth.authentication, booksController.booksList);
 router.get("/books/:bookId", auth.authentication, booksController.getbookId);
 router.put("/books/:bookId", auth.authentication, booksController.updatebook);
-router.delete("/books/:bookId", auth.authentication);
+router.delete("/books/:bookId", auth.authentication,booksController.deleteBooks);
 
 // Review APIs
 // router.post("/books/:bookId/review");
