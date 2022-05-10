@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const bookModel = require('../models/booksModel');
+
 const authentication = async function (req, res, next) {
     try {
         let token = req.headers["x-Api-key"];
@@ -10,8 +13,8 @@ const authentication = async function (req, res, next) {
         let tokenValidity = jwt.decode(token, "bookM49");
         let tokenTime = (tokenValidity.expiresIn) * 1000;
         let CreatedTime = Date.now()
-        if (CreatedTime > tokenTime){
-        return res.status(400).send({status: false, msg: "token is expired, login again"})
+        if (CreatedTime > tokenTime) {
+            return res.status(400).send({ status: false, msg: "token is expired, login again" })
         }
         let decodedToken = jwt.verify(token, "bookM49");
         if (!decodedToken)
@@ -25,18 +28,18 @@ const authentication = async function (req, res, next) {
 
 
 const autherize = async function (req, res, next) {
-    try {         
+    try {
         let requestedUserId = req.userId
         let paramsBookId = req.params.bookId
-        const isBookPresent = await bookModel.findOne({userId : requestedUserId, isDeleted : false, deletedAt: null});
-         if (!isBookPresent) {
-    return res.status(404).send({ status: false, msg: "Book is not present" });
-               }
-        let presentedUserId = isBookPresent.userId
-        if (requestedUserId !== presentedUserId){
-           return res.status(401).send({ status: false, msg: "Book is not present" });            
+        const isBookPresent = await bookModel.findOne({ userId: requestedUserId, isDeleted: false, deletedAt: null });
+        if (!isBookPresent) {
+            return res.status(404).send({ status: false, msg: "Book is not present" });
         }
-        
+        let presentedUserId = isBookPresent.userId
+        if (requestedUserId !== presentedUserId) {
+            return res.status(401).send({ status: false, msg: "Book is not present" });
+        }
+
         next();
     } catch (err) {
         res.status(500).send({ msg: "Internal Server Error", error: err.message });
