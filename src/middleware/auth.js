@@ -18,4 +18,24 @@ const authentication = async function (req, res, next) {
     }
 };
 
-module.exports = { authentication };
+
+const autherize = async function (req, res, next) {
+    try {         
+        let requestedUserId = req.userId
+        let paramsBookId = req.params.bookId
+        const isBookPresent = await bookModel.findOne({userId : requestedUserId, isDeleted : false, deletedAt: null});
+         if (!isBookPresent) {
+    return res.status(404).send({ status: false, msg: "Book is not present" });
+               }
+        let presentedUserId = isBookPresent.userId
+        if (requestedUserId !== presentedUserId){
+           return res.status(401).send({ status: false, msg: "Book is not present" });            
+        }
+        
+        next();
+    } catch (err) {
+        res.status(500).send({ msg: "Internal Server Error", error: err.message });
+    }
+};
+
+module.exports = { authentication, autherize };
