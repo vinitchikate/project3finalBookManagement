@@ -2,7 +2,8 @@ const userModel = require('../models/userModel');
 const jwt = require("jsonwebtoken");
 
 
-const createuser = async function(req, res) {
+
+const createuser = async function (req, res) {
     try {
         let saveData = await userModel.create(req.body);
         res.status(201).send({ status: true, msg: saveData });
@@ -10,6 +11,7 @@ const createuser = async function(req, res) {
         res.status(500).send({ status: false, msg: err.message });
     }
 };
+
 
 
 const userLogin = async function (req, res) {
@@ -35,9 +37,6 @@ const userLogin = async function (req, res) {
         res.status(500).send({ error: error.message });
     }
 };
-
-
-
 
 
 
