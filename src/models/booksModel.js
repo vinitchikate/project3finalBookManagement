@@ -14,7 +14,7 @@ const booksSchema = new mongoose.Schema({
     userId : {
         type : ObjectId,
         required : true,
-        refs : "userDetail"
+        ref : "user"
     },
     ISBN: {
         type: String,
