@@ -11,9 +11,10 @@ const booksSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
-        type: ObjectId,
-        ref: "user"
+    userId : {
+        type : ObjectId,
+        required : true,
+        refs : "userDetail"
     },
     ISBN: {
         type: String,
@@ -31,6 +32,17 @@ const booksSchema = new mongoose.Schema({
     reviews: {
         type: Number,
         default: 0,
+    },
+    deletedAt: {
+        type: Date 
+    },
+    isDeleted : {
+        type : Boolean,
+        default : false
+    },
+    releasedAt: {
+        type: Date, 
+        required: true 
     }
 }, { timestamps: true });
 
