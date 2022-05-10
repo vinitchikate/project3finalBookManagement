@@ -1,6 +1,89 @@
 const bookModel = require('../models/booksModel');
 const reviewModel = require('../models/reviewModel');
+///////////////////////////vinit///////////////////////////////////////////////////////////////////////
+const userModel = require("../models/userModel");
+const validator = require("../middleware/validator");
 
+// -----------CreateBooks-----------------------------------------------------------------------------------
+const createBook = async function (req, res) {
+    try {
+        const book = req.body
+        if (!validator.isValidDetails(book)) {
+            res.status(400).send({ status: false, msg: "Please provide the Book details" })   //Validate the value that is provided by the Client.
+        }
+        const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = book
+        if (req.userId != req.body.userId) {
+            return res.status(401).send({ status: false, message: "Unauthorized access." })   //validating that the userId from body is similar to the token
+        }
+
+        if (!validator.isValidValue(title)) {
+            return res.status(400).send({ status: false, msg: "Please provide the Title" })   //Title is Mandory 
+        }
+
+        const isDuplicateTitle = await bookModel.findOne({ title: title })
+        if (isDuplicateTitle) {
+            return res.status(400).send({ status: true, msg: "Title is already exists." })   //Title is Unique 
+        }
+
+        if (!validator.isValidValue(excerpt)) {
+            return res.status(400).send({ status: false, msg: "Please provide the excerpt" })   //Excerpt is Mandory 
+        }
+
+        const isValidUserId = await userModel.findById(userId)
+        if (!isValidUserId) {
+            return res.status(404).send({ status: true, msg: "User not found." })   //find User in userModel
+        }
+
+        if (!validator.isValidValue(ISBN)) {
+            return res.status(400).send({ status: false, msg: "Please provide the ISBN" })   //ISBN is mandory 
+        }
+
+        const isDuplicateISBN = await bookModel.findOne({ ISBN: ISBN })   //ISBN is unique
+        if (isDuplicateISBN) {
+            return res.status(400).send({ status: true, msg: "ISBN is already exists." })   //ISBN is unique 
+        }
+
+        if (!validator.isValidValue(category)) {
+            return res.status(400).send({ status: false, msg: "Please provide the Category" })   //Category is mandory 
+        }
+
+        if (!validator.isValidValue(subcategory)) {
+            return res.status(400).send({ status: false, msg: "Please provide the subCategory" })   //subcategory is mandory 
+        }
+
+        if (!validator.isValidValue(releasedAt)) {
+            return res.status(400).send({ status: false, msg: "Please provide the release date of book." })   //release date is mandory 
+        }
+
+        if (!(/^\d{4}-\d{2}-\d{2}$/.test(releasedAt))) {   //regex for checking the correct format of release date 
+            return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
+        }
+
+        const saved = await bookModel.create(book)  //creating the Book details
+        res.status(201).send({ status: true, msg: "Book is created successfully.", data: saved })
+
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ msg: err.message })
+    }
+}
+
+
+module.exports.createBook = createBook;
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 const getbookId = async function (req, res) {
     let bookId = req.params.bookId;
     if (bookId.length < 24 || bookId.length > 24) {
