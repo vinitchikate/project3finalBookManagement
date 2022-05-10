@@ -69,9 +69,9 @@ const validBook = async function (req, res, next) {
     const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = book
 
     //validating that the userId from body is similar to the token
-    if (req.userId != req.body.userId) {
-        return res.status(401).send({ status: false, message: "Unauthorized access." })
-    }
+    // if (req.userId != req.body.userId) {
+    //     return res.status(401).send({ status: false, message: "Unauthorized access." })
+    // }
     if (!isValidValue(title)) {
         return res.status(400).send({ status: false, msg: "Please provide the Title" })
     }
@@ -110,6 +110,7 @@ const validBook = async function (req, res, next) {
     if (!(/^\d{4}-\d{2}-\d{2}$/.test(releasedAt))) {
         return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
     }
+    next();
 };
 
 
