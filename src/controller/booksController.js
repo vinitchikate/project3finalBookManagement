@@ -28,9 +28,19 @@ const isValidIdType = function (objectId) {
 };
 const isValidSubcategory = function (value) {
     if (typeof value == "undefined" || value == null) return false;
-    if (typeof value == "string" && value.trim().length > 0) return true;
+    // if (typeof value == "string" && value.trim().length > 0) return true;
     if (typeof value == "object" && Array.isArray(value) == true) return true;
 };
+
+const isValidTitle=function(title){
+
+    return ["Mr","mrs","Miss"].indexOf(title)!=-1;
+ };
+
+ const isValidObjectId= function(ObjectId){
+
+    return mongoose.Types.ObjectId.isValid(ObjectId);
+ };
 const booksList = async function (req, res) {
     try {
         const requestBody = req.body;
@@ -121,8 +131,35 @@ const getbookId = async function (req, res) {
 
 
 const updatebook = async function (req, res) {
-    let bookId = req.params.blogId
+    let bookId = req.params.bookId
     let body = req.body
+
+    if(!isValidTitle(title)){
+        return res.status(400).send({status:false,message:"invalid request parameters,please provide valid title"})
+    }
+
+    if(!isValid(excerpt)){
+        return res.status(400).send({status:false,message:"excerpt is required"})
+    }
+
+    if(!isValid(userId)){
+        return res.status(400).send({status:false,message:"Author id is required"})
+    }
+    
+    if(!isValid(userId)){
+        return res.status(400).send({status:false,message:`${authorId}is not a valid author id`})
+    }
+   
+    if(!isValidObjectId(userId)){
+        return res.status(404).send({status:false, message:"user is Invalid"})
+   }
+    
+
+   if(!isValid(ISBN)){
+    return res.status(400).send({status:false,message:"ISBN is required"})
+}
+
+
     let result = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: { $or: [{ title: body.title }, { excert: body.excert }, { releasedate: body.releasedate }, { ISBN: DataTransfer.ISBN }, { new: true }] } })
     res.send(result)
 };
