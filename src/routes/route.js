@@ -8,5 +8,6 @@ const { validateIntern, internValidationResult, validateInternDB, } = require(".
 
 router.post("/user", validateIntern, internValidationResult, validateInternDB, userController.createuser);
 router.post("/login", middleware.validLogin, userController.userLogin);
+router.put("/put", booksController.updatebook)
 router.get("/books/:bookId",booksController.getbookId);
 module.exports = router;
