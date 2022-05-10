@@ -116,6 +116,7 @@ const booksList = async function (req, res) {
             if (bookList.length == 0) {
                  res.status(404).send({ status: false, message: "no books found" });
                  return
+                
             }
 
             res.status(200).send({status: true,message: "Book list is here",booksCount: bookList.length,bookList: bookList,});
