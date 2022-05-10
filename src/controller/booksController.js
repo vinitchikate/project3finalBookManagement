@@ -17,6 +17,19 @@ const getbookId = async function (req, res) {
 };
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+const booksModel = require('../models/booksModel')
+
+const updatebook = async function(req, res){
+    let bookId = req.params.blogId
+     let body = req.body 
+     let result = await booksModel.findByIdAndUpdate({_id:bookId}, {$set:{$or:[{title:body.title},{excert:body.excert},{releasedate:body.releasedate},{ISBN:DataTransfer.ISBN}, {new:true}]}})
+     res.send(result)
+    }
+
+
+    module.exports.updatebook = updatebook
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
