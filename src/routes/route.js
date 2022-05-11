@@ -5,12 +5,12 @@ const valid = require('../middleware/valid');
 const auth = require('../middleware/auth');
 const userController = require("../Controller/userController");
 const booksController = require("../controller/booksController");
-const { validateIntern, internValidationResult, validateInternDB } = require("../middleware/registerMiddleware");
+const { registerUserValidation, userLoginValidation } = require("../middleware/registerMiddleware");
 
 
 // User APIs
-router.post("/register", validateIntern, internValidationResult, validateInternDB, userController.createuser);
-router.post("/login", valid.validLogin, userController.userLogin);
+router.post("/register",registerUserValidation , userController.createuser);
+router.post("/login", userLoginValidation, userController.userLogin);
 
 // Books API
 router.post("/books",auth.authentication,/*auth.autherize,*/ valid.validBook, booksController.createBook);
