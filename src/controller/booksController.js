@@ -182,8 +182,8 @@ const updatebook = async function (req, res) {
             }
         } 
         console.log(filterConditions) 
-const updatedBook = await bookModel.findByIdAndUpdate({_id:bookId},{$set:{ filterConditions}
-},
+const updatedBook = await bookModel.findByIdAndUpdate({_id:bookId},{$set: filterConditions}
+,
 {new:true}
 )
 console.log(updatedBook) 
