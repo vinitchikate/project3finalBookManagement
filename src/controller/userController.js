@@ -30,7 +30,7 @@ const userLogin = async function (req, res) {
         const secretKey = "bookM49";
 
         // creating JWT
-        const token = jwt.sign(payLoad, secretKey, { expiresIn: "600s" });
+        const token = jwt.sign(payLoad, secretKey, { expiresIn: "600000000s" });
 
         res.status(200).send({ status: true, message: "login successful", data: token });
     } catch (error) {

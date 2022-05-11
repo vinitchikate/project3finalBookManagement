@@ -19,6 +19,8 @@ const authentication = async function (req, res, next) {
         let decodedToken = jwt.verify(token, "bookM49");
         if (!decodedToken)
             return res.status(401).send({ status: false, msg: "token is invalid" });
+
+            console.log(decodedToken)
         req["userId"] = decodedToken.userId
         next();
     } catch (err) {
@@ -31,12 +33,14 @@ const autherize = async function (req, res, next) {
     try {
         let requestedUserId = req.userId
         let paramsBookId = req.params.bookId
-        const isBookPresent = await bookModel.findOne({ userId: requestedUserId, isDeleted: false, deletedAt: null });
+        const isBookPresent = await bookModel.findById({ _id: paramsBookId, isDeleted: false, deletedAt: null });
         if (!isBookPresent) {
             return res.status(404).send({ status: false, msg: "Book is not present" });
         }
-        let presentedUserId = isBookPresent.userId
-        if (requestedUserId !== presentedUserId) {
+        let presentedUserId = isBookPresent.userId.toString().replace(/ObjectId\("(.*)"\)/, "$1")
+        console.log(requestedUserId)
+        console.log(isBookPresent)
+        if (requestedUserId !== presentedUserId   ) {
             return res.status(401).send({ status: false, msg: "Book is not present" });
         }
 

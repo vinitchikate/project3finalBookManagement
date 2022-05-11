@@ -69,9 +69,12 @@ const validBook = async function (req, res, next) {
     const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = book
 
     //validating that the userId from body is similar to the token
-    // if (req.userId != req.body.userId) {
-    //     return res.status(401).send({ status: false, message: "Unauthorized access." })
-    // }
+    if (req.userId != req.body.userId) {
+        return res.status(401).send({ status: false, message: "Unauthorized access." })
+    }
+
+    console.log(req.body.userId)
+    console.log(req.userId)
     if (!isValidValue(title)) {
         return res.status(400).send({ status: false, msg: "Please provide the Title" })
     }

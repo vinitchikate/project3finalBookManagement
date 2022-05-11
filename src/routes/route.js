@@ -13,11 +13,11 @@ router.post("/register", validateIntern, internValidationResult, validateInternD
 router.post("/login", valid.validLogin, userController.userLogin);
 
 // Books API
-router.post("/books", valid.validBook, booksController.createBook);
-router.get("/books", booksController.booksList);
+router.post("/books",auth.authentication,/*auth.autherize,*/ valid.validBook, booksController.createBook);
+router.get("/books", auth.authentication, booksController.booksList);
 router.get("/books/:bookId", booksController.getbookId);
-// router.put("/books/:bookId", auth.authentication, booksController.updatebook);
-router.delete("/books/:bookId",booksController.deleteBooks);
+router.put("/books/:bookId", booksController.updatebook);
+router.delete("/books/:bookId",auth.authentication,auth.autherize, booksController.deleteBooks);
 
 // Review APIs
 // router.post("/books/:bookId/review");

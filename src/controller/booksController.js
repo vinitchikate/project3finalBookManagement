@@ -30,6 +30,13 @@ const isValidObjectId = function (ObjectId) {
 const createBook = async function (req, res) {
     try {
         const book = req.body;
+        let requestedUserId = req.userId
+       let bodyUser = book.userId
+       console.log(requestedUserId)
+       console.log(bodyUser)
+        if (requestedUserId !== bodyUser ) {
+            return res.status(401).send({ status: false, msg: "Book is not present" });
+        }        
         const saved = await bookModel.create(book);  //creating the Book details
         res.status(201).send({ status: true, msg: "Book is created successfully.", data: saved });
     }
@@ -92,7 +99,7 @@ const booksList = async function (req, res) {
                 res.status(404).send({ status: false, message: "no books entry present" });
                 return
             }
-            res.status(200).send({ status: true, message: "filtered books enteries are here", booksCount: filteredBookList.length, bookList: filteredBookList, });
+             res.status(200).send({ status: true, message: "filtered books enteries are here", booksCount: filteredBookList.length, bookList: filteredBookList, });
         }
         else {
             const bookList = await bookModel.find(filterConditions).select({ _id: 1, title: 1, userId: 1, category: 1, subcategory: 1, releasedAt: 1, reviews: 1, }).sort({ title: 1 });
@@ -130,6 +137,60 @@ const getbookId = async function (req, res) {
 
 
 
+
+const updatebook = async function (req, res) {
+    let bookId = req.params.bookId
+    let body = req.body
+    const filterConditions = { isDeleted: false, deletedAt: null };
+    if (isValidRequestBody(body)) {
+        const {title, excerpt, ISBN, releasedAt } = body;
+
+        if (body.hasOwnProperty("title")) {
+            if (isValid(title)) {
+                    filterConditions["title"] = title.trim(); 
+            } else {
+                res.status(400).send({ status: false, message: "enter a valid title" });
+                return
+            }
+        }
+
+        if (body.hasOwnProperty("excerpt")) {
+            if (isValid(excerpt)) {
+                filterConditions["excerpt"] = excerpt.trim();
+            } else {
+                res.status(400).send({ status: false, message: `format for excerpt is incorrect` });
+                return
+            }
+        }
+
+        if (body.hasOwnProperty("releasedAt")) {
+            if (isValid(releasedAt)) {
+                filterConditions["releasedAt"] = releasedAt;
+
+            } else {
+                res.status(400).send({ status: false, message: `format for releasedAt is incorrect`, });
+                return
+            }
+        }
+        if (body.hasOwnProperty("ISBN")) {
+            if (isValid(ISBN)) {
+                filterConditions["ISBN"] = ISBN.trim();
+
+            } else {
+                res.status(400).send({ status: false, message: `format for ISBN is incorrect`, });
+                return
+            }
+        } 
+        console.log(filterConditions) 
+const updatedBook = await bookModel.findByIdAndUpdate({_id:bookId},{$set:{ filterConditions}
+},
+{new:true}
+)
+console.log(updatedBook) 
+res.status(201).send({status: true, message:"Blog successfully updated", data:updatedBook})
+}}
+
+
 const deleteBooks = async function (req, res) {
     try {
         const bookId = req.params.bookId
@@ -157,4 +218,4 @@ const deleteBooks = async function (req, res) {
 
 
 
-module.exports = { createBook, getbookId, booksList, deleteBooks };
+module.exports = { createBook, getbookId, booksList, updatebook, deleteBooks };
