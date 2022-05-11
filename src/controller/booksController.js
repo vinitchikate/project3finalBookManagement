@@ -30,14 +30,13 @@ const isValidObjectId = function (ObjectId) {
 const createBook = async function (req, res) {
     try {
         const book = req.body;
-        let requestedUserId = req.userId
-       let bodyUser = book.userId
-       console.log(requestedUserId)
-       console.log(bodyUser)
-        if (requestedUserId !== bodyUser ) {
+        let requestedUserId = req.userId;
+        let bodyUser = book.userId;
+        if (requestedUserId !== bodyUser) {
             return res.status(401).send({ status: false, msg: "Book is not present" });
-        }        
-        const saved = await bookModel.create(book);  //creating the Book details
+        }
+
+        const saved = await bookModel.create(book);
         res.status(201).send({ status: true, msg: "Book is created successfully.", data: saved });
     }
     catch (err) {
@@ -50,14 +49,13 @@ const createBook = async function (req, res) {
 const booksList = async function (req, res) {
     try {
         const requestBody = req.body;
-        const queryParams = req.query;
-        const filterConditions = { isDeleted: false, deletedAt: null };
-
         if (isValidRequestBody(requestBody)) {
             res.status(400).send({ status: false, message: "content from body not required" });
             return
         }
 
+        const queryParams = req.query;
+        const filterConditions = { isDeleted: false, deletedAt: null };
         if (isValidRequestBody(queryParams)) {
             const { userId, category, subcategory } = queryParams;
 
@@ -94,12 +92,14 @@ const booksList = async function (req, res) {
                     return
                 }
             }
+
             const filteredBookList = await bookModel.find(filterConditions).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, releasedAt: 1, reviews: 1, }).sort({ title: 1 });
             if (filteredBookList.length == 0) {
                 res.status(404).send({ status: false, message: "no books entry present" });
                 return
             }
-             res.status(200).send({ status: true, message: "filtered books enteries are here", booksCount: filteredBookList.length, bookList: filteredBookList, });
+
+            res.status(200).send({ status: true, message: "filtered books enteries are here", booksCount: filteredBookList.length, bookList: filteredBookList, });
         }
         else {
             const bookList = await bookModel.find(filterConditions).select({ _id: 1, title: 1, userId: 1, category: 1, subcategory: 1, releasedAt: 1, reviews: 1, }).sort({ title: 1 });
@@ -107,6 +107,7 @@ const booksList = async function (req, res) {
                 res.status(404).send({ status: false, message: "no books found" });
                 return
             }
+
             res.status(200).send({ status: true, message: "Book list is here", booksCount: bookList.length, bookList: bookList, });
         }
     } catch (error) {
@@ -139,15 +140,16 @@ const getbookId = async function (req, res) {
 
 
 const updatebook = async function (req, res) {
-    let bookId = req.params.bookId
-    let body = req.body
+    let bookId = req.params.bookId;
+    let body = req.body;
     const filterConditions = { isDeleted: false, deletedAt: null };
+
     if (isValidRequestBody(body)) {
-        const {title, excerpt, ISBN, releasedAt } = body;
+        const { title, excerpt, ISBN, releasedAt } = body;
 
         if (body.hasOwnProperty("title")) {
             if (isValid(title)) {
-                    filterConditions["title"] = title.trim(); 
+                filterConditions["title"] = title.trim();
             } else {
                 res.status(400).send({ status: false, message: "enter a valid title" });
                 return
@@ -180,41 +182,35 @@ const updatebook = async function (req, res) {
                 res.status(400).send({ status: false, message: `format for ISBN is incorrect`, });
                 return
             }
-        } 
-        console.log(filterConditions) 
-const updatedBook = await bookModel.findByIdAndUpdate({_id:bookId},{$set: filterConditions}
-,
-{new:true}
-)
-console.log(updatedBook) 
-res.status(201).send({status: true, message:"Blog successfully updated", data:updatedBook})
-}}
+        }
+        const updatedBook = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: filterConditions }, { new: true });
+        res.status(201).send({ status: true, message: "Blog successfully updated", data: updatedBook })
+    } else {
+        res.status(400).send({ status: false, msg: "Plz Enter Data In Body" });
+    }
+};
 
 
 const deleteBooks = async function (req, res) {
     try {
-        const bookId = req.params.bookId
-        const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false })      //finding the bookId
+        const bookId = req.params.bookId;
+
+        const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false });
         if (!IsValidBookId) {
-            return res.status(404).send({ status: true, msg: "No book found." })
+            return res.status(404).send({ status: true, msg: "No book found." });
         }
 
         if (IsValidBookId.userId != req.userId) {        //validating that the userId from body is similar to the token
-            return res.status(401).send({ status: false, message: "Unauthorized access." })
+            return res.status(401).send({ status: false, message: "Unauthorized access." });
         }
 
-        const deletedDetails = await bookModel.findOneAndUpdate(
-            { _id: bookId },    //finding the bookId and mark the isDeleted to true & update the date at deletedAt.
-            { isDeleted: true, deletedAt: new Date() },
-            { new: true })
-        res.status(201).send({ status: true, msg: "Book deleted successfully", data: deletedDetails })
+        const deletedDetails = await bookModel.findOneAndUpdate({ _id: bookId }, { isDeleted: true, deletedAt: new Date() }, { new: true });
+        res.status(201).send({ status: true, msg: "Book deleted successfully", data: deletedDetails });
     }
-
     catch (err) {
-        console.log(err)
         res.status(500).send({ msg: err.message })
     }
-}
+};
 
 
 

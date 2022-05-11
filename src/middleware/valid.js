@@ -8,9 +8,16 @@ const isValid = function (value) {
 const isValidRequestBody = function (object) {
     return Object.keys(object).length > 0;
 };
-const isValidEmail = function (email) {
-    const regexForEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return regexForEmail.test(email);
+const isValidTitle = function (title) {
+    return ["Mr", "Mrs", "Miss"].indexOf(title) !== -1
+};
+const isValidemail = function (email) {
+    const regexForemail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return regexForemail.test(email);
+};
+const isValidphone = function (phone) {
+    const regexForMobile = /^[6-9]\d{9}$/;
+    return regexForMobile.test(phone);
 };
 const isValidValue = function (value) {      //if the value is undefined or null || string that length is 0 it will return false.
     if (typeof value === 'undefined' || value === null) return false        //it checks whether the value is null or undefined.
@@ -23,32 +30,98 @@ const isValidDetails = function (requestBody) {
 
 
 
-const validLogin = async function (req, res, next) {
+const validRegister = async function (req, res, next) {
     try {
+        const queryParams = req.query;
+        if (isValidRequestBody(queryParams)) {
+            return res.status(400).send({ status: false, message: "invalid request" });
+        }
+
         const requestBody = req.body;
-        const userName = requestBody.email;
-        const password = requestBody.password;
-
         if (!isValidRequestBody(requestBody)) {
-            return res.status(400).send({ status: false, message: "please provide input credentials" });
+            return res.status(400).send({ status: false, message: "user data is required to create a new user" });
         }
 
-        // validating userName and password
-        if (!isValid(userName)) {
-            return res.status(400).send({ status: false, message: "email is required" });
+        const { title, name, phone, email, password, address } = requestBody;
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, message: `title is required and should be valid format like: Mr/Mrs/Miss` });
+        }
+        if (!isValidTitle(title)) {
+            return res.status(400).send({ status: false, message: "Title should be among Mr, Mrs and Miss" });
         }
 
-        if (!isValidEmail(userName)) {
-            return res.status(400).send({ status: false, message: "please enter a valid email address" });
+        if (!isValid(name)) {
+            return res.status(400).send({ status: false, message: `name is required and should be in valid format` });
+        }
+
+        if (!isValid(phone)) {
+            return res.status(400).send({ status: false, message: "mobile number is required" });
+        }
+        if (!isValidphone(phone)) {
+            return res.status(400).send({ status: false, message: " please enter a valid 10 digit mobile number without country code and 0" });
+        }
+
+        const isPhonePresent = await userModel.findOne({ phone });
+        if (isPhonePresent) {
+            return res.status(400).send({ status: false, message: `mobile number: ${phone} already exist` });
+        }
+
+        if (!isValid(email)) {
+            return res.status(400).send({ status: false, message: "email address is required" });
+        }
+        if (!isValidemail(email)) {
+            return res.status(400).send({ status: false, message: " please enter a valid email address" });
+        }
+
+        const isEmailPresent = await userModel.findOne({ email });
+        if (isEmailPresent) {
+            return res.status(400).send({ status: false, message: `email: ${email} already exist` });
         }
 
         if (!isValid(password)) {
             return res.status(400).send({ status: false, message: "password is required" });
         }
 
-        // if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(password)) {
-        //     return res.status(400).send({ status: false, message: "password should be: 8 to 15 characters, at least one letter and one number ", });
-        // }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(password)) {
+            return res.status(400).send({ status: false, message: "password should be: 8 to 15 characters, at least one letter and one number " });
+        }
+
+        next();
+    }
+    catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+};
+
+
+const validLogin = async function (req, res, next) {
+    try {
+        const queryParams = req.query;
+        if (isValidRequestBody(queryParams)) {
+            return res.status(400).send({ status: false, message: "invalid request" });
+        }
+
+        const requestBody = req.body;
+        if (!isValidRequestBody(requestBody)) {
+            return res.status(400).send({ status: false, message: "please provide input credentials" });
+        }
+
+        const userName = requestBody.email;
+        if (!isValid(userName)) {
+            return res.status(400).send({ status: false, message: "email is required" });
+        }
+        if (!isValidemail(userName)) {
+            return res.status(400).send({ status: false, message: "please enter a valid email address" });
+        }
+
+        const password = requestBody.password;
+        if (!isValid(password)) {
+            return res.status(400).send({ status: false, message: "password is required" });
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(password)) {
+            return res.status(400).send({ status: false, message: "password should be: 8 to 15 characters, at least one letter and one number " });
+        }
+
         next();
     }
     catch (err) {
@@ -118,4 +191,4 @@ const validBook = async function (req, res, next) {
 
 
 
-module.exports = { validLogin, validBook };
+module.exports = { validRegister, validLogin, validBook };

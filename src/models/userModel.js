@@ -25,10 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    address: { 
-        street:String,
-        city:String,
-        pincode:String,
+    address: {
+        street: String,
+        city: String,
+        pincode: String,
     },
 }, { timestamps: true });
 

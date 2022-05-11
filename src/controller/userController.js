@@ -2,7 +2,6 @@ const userModel = require('../models/userModel');
 const jwt = require("jsonwebtoken");
 
 
-
 const createuser = async function (req, res) {
     try {
         let saveData = await userModel.create(req.body);
@@ -13,7 +12,6 @@ const createuser = async function (req, res) {
 };
 
 
-
 const userLogin = async function (req, res) {
     try {
         const requestBody = req.body;
@@ -22,22 +20,19 @@ const userLogin = async function (req, res) {
 
         const loginUser = await userModel.findOne({ email: userName.toLowerCase().trim(), password: password, });
         if (!loginUser) {
-            return res.status(404).send({ status: false, message: "invalid login credentials" });
+            return res.status(400).send({ status: false, message: "Plz Enter Valid Credentials" });
         }
 
         const userID = loginUser._id;
         const payLoad = { userId: userID };
         const secretKey = "bookM49";
+        const token = jwt.sign(payLoad, secretKey, { expiresIn: "6000000s" });
 
-        // creating JWT
-        const token = jwt.sign(payLoad, secretKey, { expiresIn: "600000000s" });
-
-        res.status(200).send({ status: true, message: "login successful", data: token });
+        res.status(200).send({ status: true, message: "Login successful", data: token });
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 };
-
 
 
 module.exports = { userLogin, createuser };

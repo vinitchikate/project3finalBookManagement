@@ -5,19 +5,18 @@ const valid = require('../middleware/valid');
 const auth = require('../middleware/auth');
 const userController = require("../Controller/userController");
 const booksController = require("../controller/booksController");
-const { registerUserValidation, userLoginValidation } = require("../middleware/registerMiddleware");
 
 
 // User APIs
-router.post("/register",registerUserValidation , userController.createuser);
-router.post("/login", userLoginValidation, userController.userLogin);
+router.post("/register", valid.validRegister, userController.createuser);
+router.post("/login", valid.validLogin, userController.userLogin);
 
 // Books API
-router.post("/books",auth.authentication,/*auth.autherize,*/ valid.validBook, booksController.createBook);
+router.post("/books", auth.authentication, valid.validBook, booksController.createBook);
 router.get("/books", auth.authentication, booksController.booksList);
 router.get("/books/:bookId", booksController.getbookId);
 router.put("/books/:bookId", booksController.updatebook);
-router.delete("/books/:bookId",auth.authentication,auth.autherize, booksController.deleteBooks);
+router.delete("/books/:bookId", auth.authentication, auth.authorization, booksController.deleteBooks);
 
 // Review APIs
 // router.post("/books/:bookId/review");

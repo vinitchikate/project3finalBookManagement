@@ -11,10 +11,10 @@ const booksSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userId : {
-        type : ObjectId,
-        required : true,
-        ref : "user"
+    userId: {
+        type: ObjectId,
+        required: true,
+        ref: "user"
     },
     ISBN: {
         type: String,
@@ -37,13 +37,13 @@ const booksSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    isDeleted : {
-        type : Boolean,
-        default : false
+    isDeleted: {
+        type: Boolean,
+        default: false
     },
     releasedAt: {
-        type: Date, 
-        required: true 
+        type: Date,
+        required: true
     }
 }, { timestamps: true });
 

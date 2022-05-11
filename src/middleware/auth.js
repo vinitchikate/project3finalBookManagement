@@ -1,27 +1,29 @@
 const jwt = require('jsonwebtoken');
 const bookModel = require('../models/booksModel');
 
+
+
 const authentication = async function (req, res, next) {
     try {
         let token = req.headers["x-Api-key"];
         if (!token) token = req.headers["x-api-key"];
-        if (!token)
-            return res.status(400).send({
-                status: false,
-                msg: "Token required! Please login to generate token",
-            });
+        if (!token) {
+            return res.status(400).send({ status: false, msg: "Token required! Please login to generate token" });
+        }
+
         let tokenValidity = jwt.decode(token, "bookM49");
         let tokenTime = (tokenValidity.expiresIn) * 1000;
         let CreatedTime = Date.now()
         if (CreatedTime > tokenTime) {
             return res.status(400).send({ status: false, msg: "token is expired, login again" })
         }
-        let decodedToken = jwt.verify(token, "bookM49");
-        if (!decodedToken)
-            return res.status(401).send({ status: false, msg: "token is invalid" });
 
-            console.log(decodedToken)
-        req["userId"] = decodedToken.userId
+        let decodedToken = jwt.verify(token, "bookM49");
+        if (!decodedToken) {
+            return res.status(401).send({ status: false, msg: "token is invalid" });
+        }
+        req["userId"] = decodedToken.userId;
+
         next();
     } catch (err) {
         res.status(500).send({ msg: "Internal Server Error", error: err.message });
@@ -29,18 +31,18 @@ const authentication = async function (req, res, next) {
 };
 
 
-const autherize = async function (req, res, next) {
+const authorization = async function (req, res, next) {
     try {
-        let requestedUserId = req.userId
-        let paramsBookId = req.params.bookId
+        let requestedUserId = req.userId;
+        let paramsBookId = req.params.bookId;
+
         const isBookPresent = await bookModel.findById({ _id: paramsBookId, isDeleted: false, deletedAt: null });
         if (!isBookPresent) {
             return res.status(404).send({ status: false, msg: "Book is not present" });
         }
-        let presentedUserId = isBookPresent.userId.toString().replace(/ObjectId\("(.*)"\)/, "$1")
-        console.log(requestedUserId)
-        console.log(isBookPresent)
-        if (requestedUserId !== presentedUserId   ) {
+
+        let presentedUserId = isBookPresent.userId.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+        if (requestedUserId !== presentedUserId) {
             return res.status(401).send({ status: false, msg: "Book is not present" });
         }
 
@@ -50,4 +52,6 @@ const autherize = async function (req, res, next) {
     }
 };
 
-module.exports = { authentication, autherize };
+
+
+module.exports = { authentication, authorization };
