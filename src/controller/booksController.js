@@ -141,7 +141,6 @@ const getbookId = async function (req, res) {
 
 
 const updatebook = async function (req, res) {
-    console.log("In the update");
     let bookId = req.params.bookId;
     if (bookId.length < 24 || bookId.length > 24) {
         return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
@@ -206,7 +205,7 @@ const deleteBooks = async function (req, res) {
 
         const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false });
         if (!IsValidBookId) {
-            return res.status(404).send({ status: true, msg: "No book found." });
+            return res.status(404).send({ status: false, msg: "No book found." });
         }
 
         if (IsValidBookId.userId != req.userId) {        //validating that the userId from body is similar to the token
