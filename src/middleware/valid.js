@@ -146,8 +146,6 @@ const validBook = async function (req, res, next) {
         return res.status(401).send({ status: false, message: "Unauthorized access." })
     }
 
-    console.log(req.body.userId)
-    console.log(req.userId)
     if (!isValidValue(title)) {
         return res.status(400).send({ status: false, msg: "Please provide the Title" })
     }
@@ -166,6 +164,10 @@ const validBook = async function (req, res, next) {
     }
     if (!isValidValue(ISBN)) {
         return res.status(400).send({ status: false, msg: "Please provide the ISBN" })
+    }
+    
+    if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN))) {
+        return res.status(400).send({ status: false, msg: "Plz Enter Valid ISBN" });
     }
 
     const isDuplicateISBN = await bookModel.findOne({ ISBN: ISBN })

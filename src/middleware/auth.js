@@ -35,7 +35,10 @@ const authorization = async function (req, res, next) {
     try {
         let requestedUserId = req.userId;
         let paramsBookId = req.params.bookId;
-
+        if (paramsBookId.length < 24 || paramsBookId.length > 24) {
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+        }
+        
         const isBookPresent = await bookModel.findById({ _id: paramsBookId, isDeleted: false, deletedAt: null });
         if (!isBookPresent) {
             return res.status(404).send({ status: false, msg: "Book is not present" });
@@ -43,7 +46,7 @@ const authorization = async function (req, res, next) {
 
         let presentedUserId = isBookPresent.userId.toString().replace(/ObjectId\("(.*)"\)/, "$1");
         if (requestedUserId !== presentedUserId) {
-            return res.status(401).send({ status: false, msg: "Book is not present" });
+            return res.status(401).send({ status: false, msg: "Unauthorized" });
         }
 
         next();

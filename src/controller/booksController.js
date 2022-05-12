@@ -30,6 +30,7 @@ const isValidObjectId = function (ObjectId) {
 const createBook = async function (req, res) {
     try {
         const book = req.body;
+        // book["userId"] = req.userId;
         let requestedUserId = req.userId;
         let bodyUser = book.userId;
         if (requestedUserId !== bodyUser) {
@@ -140,7 +141,9 @@ const getbookId = async function (req, res) {
 
 
 const updatebook = async function (req, res) {
+    console.log("In the update");
     let bookId = req.params.bookId;
+   
     let body = req.body;
     const filterConditions = { isDeleted: false, deletedAt: null };
 
@@ -184,7 +187,7 @@ const updatebook = async function (req, res) {
             }
         }
         const updatedBook = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: filterConditions }, { new: true });
-        res.status(201).send({ status: true, message: "Blog successfully updated", data: updatedBook })
+        res.status(200).send({ status: true, message: "Blog successfully updated", data: updatedBook })
     } else {
         res.status(400).send({ status: false, msg: "Plz Enter Data In Body" });
     }
@@ -208,7 +211,7 @@ const deleteBooks = async function (req, res) {
         res.status(201).send({ status: true, msg: "Book deleted successfully", data: deletedDetails });
     }
     catch (err) {
-        res.status(500).send({ msg: err.message })
+        res.status(500).send({ msg: err.message });
     }
 };
 
