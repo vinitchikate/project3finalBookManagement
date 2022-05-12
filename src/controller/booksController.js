@@ -121,7 +121,7 @@ const getbookId = async function (req, res) {
     try {
         let bookId = req.params.bookId;
         if (bookId.length < 24 || bookId.length > 24) {
-            return res.status(400).send({ status: false, msg: "Plz Enter Valid Book Id" });
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
         }
 
         let bData = await bookModel.findById(bookId);
@@ -143,7 +143,10 @@ const getbookId = async function (req, res) {
 const updatebook = async function (req, res) {
     console.log("In the update");
     let bookId = req.params.bookId;
-   
+    if (bookId.length < 24 || bookId.length > 24) {
+        return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+    }
+
     let body = req.body;
     const filterConditions = { isDeleted: false, deletedAt: null };
 
@@ -197,6 +200,9 @@ const updatebook = async function (req, res) {
 const deleteBooks = async function (req, res) {
     try {
         const bookId = req.params.bookId;
+        if (bookId.length < 24 || bookId.length > 24) {
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+        }
 
         const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false });
         if (!IsValidBookId) {
