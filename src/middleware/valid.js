@@ -29,17 +29,17 @@ const isValidValue = function (value) {      //if the value is undefined or null
 const isValidDetails = function (requestBody) {
     return Object.keys(requestBody).length > 0;       // it checks, is there any key is available or not in request body
 };
-
 const isValidObjectId = function (ObjectId) {
-
     return mongoose.Types.ObjectId.isValid(ObjectId);
 };
-
+const isValidIdType = function (objectId) {
+    return mongoose.Types.ObjectId.isValid(objectId)
+};
 const isValidarr = function (value) {
     if (typeof value === 'undefined' || value === null) return false        //it checks whether the value is null or undefined.
     if (typeof value != 'number' && (value < 1 || value > 5)) return false    //it checks whether the string contain only space or not 
     return true;
-}
+};
 
 
 
@@ -143,7 +143,6 @@ const validLogin = async function (req, res, next) {
 };
 
 
-
 const validBook = async function (req, res, next) {
     const book = req.body;
 
@@ -243,6 +242,56 @@ const validreview = async function (req, res, next) {
 };
 
 
+const updateReview = async function (req, res, next) {
+    try {
+        const queryParams = req.query;
+        const requestBody = req.body;
+        const bookId = req.params.bookId;
+        const reviewId = req.params.reviewId;
+
+
+        if (isValidRequestBody(queryParams)) {
+            return res.status(400).send({ status: false, message: "invalid request" })
+        }
+
+        if (!isValidRequestBody(requestBody)) {
+            return res.status(400).send({ status: false, message: "data is required for review update" })
+        }
+
+        if (!isValidIdType(bookId)) {
+            return res.status(400).send({ status: false, message: `enter a valid bookId` })
+        }
+
+
+        let bookByBookId = await bookModel.findOne({ _id: bookId, isDeleted: false, deletedAt: null }).lean();
+        if (!bookByBookId) {
+            return res.status(404).send({ status: false, message: ` No Book found by ${bookId}` })
+        }
+
+        if (!reviewId) {
+            return res.status(400).send({ status: false, message: "reviewId is required in path params" })
+        }
+
+        if (!isValidIdType(reviewId)) {
+            return res.status(400).send({ status: false, message: `enter a valid reviewId` })
+        }
+
+        const reviewByReviewId = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
+        if (!reviewByReviewId) {
+            return res.status(404).send({ status: false, message: `No review found by ${reviewId} ` })
+        }
+
+        if (reviewByReviewId.bookId != bookId) {
+            return res.status(404).send({ status: false, message: "review is not from this book" })
+        }
+
+        next();
+    } catch (err) {
+        res.status(500).send({ error: err.message })
+    }
+};
+
+
 const deleteReview = async function (req, res, next) {
     try {
         let reviewId = req.params.reviewId;
@@ -273,5 +322,8 @@ const deleteReview = async function (req, res, next) {
     catch (err) {
         res.status(500).send({ status: false, msg: err.message });
     }
-}
-module.exports = { validRegister, validLogin, validBook, validreview, deleteReview };
+};
+
+
+
+module.exports = { validRegister, validLogin, validBook, validreview, updateReview, deleteReview };
