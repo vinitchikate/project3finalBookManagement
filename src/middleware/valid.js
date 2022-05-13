@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const userModel = require("../models/userModel");
 const bookModel = require('../models/booksModel');
+const reviewModel = require('../models/reviewModel');
 
 const isValid = function (value) {
     if (typeof value == "undefined" || value == null) return false;
@@ -29,12 +30,12 @@ const isValidDetails = function (requestBody) {
     return Object.keys(requestBody).length > 0;       // it checks, is there any key is available or not in request body
 };
 
-const isValidObjectId= function(ObjectId){
+const isValidObjectId = function (ObjectId) {
 
     return mongoose.Types.ObjectId.isValid(ObjectId);
- };
+};
 
-const isValidarr = function(value){
+const isValidarr = function (value) {
     if (typeof value === 'undefined' || value === null) return false        //it checks whether the value is null or undefined.
     if (typeof value != 'number' && (value < 1 || value > 5)) return false    //it checks whether the string contain only space or not 
     return true;
@@ -177,7 +178,7 @@ const validBook = async function (req, res, next) {
     if (!isValidValue(ISBN)) {
         return res.status(400).send({ status: false, msg: "Please provide the ISBN" })
     }
-    
+
     if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN))) {
         return res.status(400).send({ status: false, msg: "Plz Enter Valid ISBN" });
     }
@@ -216,7 +217,7 @@ const validreview = async function (req, res, next) {
             return res.status(400).send({ status: false, message: "content is required to create a new user" });
         }
 
-        const { bookId, reviewedBy , rating , review } = requestBody;
+        const { bookId, reviewedBy, rating, review } = requestBody;
 
         if (!isValid(reviewedBy)) {
             return res.status(400).send({ status: false, message: "reviewed by is required" });
@@ -225,7 +226,7 @@ const validreview = async function (req, res, next) {
         if (!isValidObjectId(bookId)) {
             return res.status(400).send({ status: false, message: "bookId  is invalid" });
         }
- 
+
         if (!isValid(review)) {
             return res.status(400).send({ status: false, message: "review  is required" });
         }
@@ -234,10 +235,43 @@ const validreview = async function (req, res, next) {
             return res.status(400).send({ status: false, message: "review  is required" });
         }
 
-         next()
+        next()
 
-    }catch (err) {
+    } catch (err) {
         res.status(500).send({ error: err.message });
     }
+};
+
+
+const deleteReview = async function (req, res, next) {
+    try {
+        let reviewId = req.params.reviewId;
+        if (reviewId.length < 24 || reviewId.length > 24) {
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid ReviewId In Params" });
+        }
+
+        let findreviewId = await reviewModel.findById(reviewId);
+        if (!findreviewId) {
+            return res.status(404).send({ status: false, msg: "Review Id Not Found, Plz Enter Valid ReviewId" });
+        }
+        if (findreviewId.isDeleted == true) {
+            return res.status(400).send({ status: false, msg: "Review Is Already Deleted" });
+        }
+
+        let bookId = req.params.bookId;
+        if (bookId.length < 24 || bookId.length > 24) {
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid ReviewId In Params" });
+        }
+
+        let findbookId = await bookModel.findById(bookId);
+        if (!findbookId) {
+            return res.status(404).send({ status: false, msg: "Book Id Not Found, Plz Enter Valid BookId" });
+        }
+
+        next();
+    }
+    catch (err) {
+        res.status(500).send({ status: false, msg: err.message });
+    }
 }
-module.exports = { validRegister, validLogin, validBook , validreview };
+module.exports = { validRegister, validLogin, validBook, validreview, deleteReview };

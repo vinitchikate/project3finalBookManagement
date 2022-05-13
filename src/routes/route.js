@@ -22,7 +22,7 @@ router.delete("/books/:bookId", auth.authentication, booksController.deleteBooks
 // Review APIs
 router.post("/books/:bookId/review", valid.validreview, reviewController.createreview);
 // router.put("/books/:bookId/review/:reviewId");
-router.delete("/books/:bookId/review/:reviewId", reviewController.dreview);
+router.delete("/books/:bookId/review/:reviewId", valid.deleteReview, reviewController.dreview);
 
 
 module.exports = router;
