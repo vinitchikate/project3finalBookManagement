@@ -1,4 +1,4 @@
- const reviewModel = require('../Model/reviewModel')
+ const reviewModel = require('../Models/reviewModel')
 
 const createreview = async function (req, res) {
     try {
