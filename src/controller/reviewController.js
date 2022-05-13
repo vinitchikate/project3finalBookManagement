@@ -1,5 +1,30 @@
+const ReviewModel = require('../models/reviewModel')
+const BookModel = require('../models/booksModel')
+const mongoose = require('mongoose')
 const reviewModel = require('../models/reviewModel');
 const bookModel = require('../models/booksModel');
+
+//*************************************VALIDATION FUNCTIONS************************************************* */
+const isValid = function (value) {
+    if (typeof (value) == 'undefined' || value == null) return false
+    if (typeof (value) == 'string' && value.trim().length > 0) return true
+}
+
+const isValidRating = function (value) {
+    if (typeof (value) == 'undefined' || value == null) return false
+    if (typeof (value) != 'number') return false
+    if (value < 1 || value > 5) return false
+    return true
+}
+
+const isValidRequestBody = function (object) {
+    return (Object.keys(object).length > 0)
+}
+
+const isValidIdType = function (objectId) {
+    return mongoose.Types.ObjectId.isValid(objectId)
+}
+
 
 const createreview = async function (req, res) {
     try {
