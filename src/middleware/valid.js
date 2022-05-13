@@ -251,11 +251,11 @@ const updateReview = async function (req, res, next) {
 
 
         if (isValidRequestBody(queryParams)) {
-            return res.status(400).send({ status: false, message: "invalid request" })
+            return res.status(400).send({ status: false, message: "invalid request" });
         }
 
         if (!isValidRequestBody(requestBody)) {
-            return res.status(400).send({ status: false, message: "data is required for review update" })
+            return res.status(400).send({ status: false, message: "data is required for review update" });
         }
 
         if (!isValidIdType(bookId)) {

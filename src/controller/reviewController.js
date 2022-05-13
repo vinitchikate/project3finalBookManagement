@@ -38,6 +38,50 @@ const createreview = async function (req, res) {
 };
 
 
+const updateReview = async function (req, res) {
+    try {
+        const requestBody = req.body;
+        const bookId = req.params.bookId;
+        const reviewId = req.params.reviewId;
+        let bookByBookId = await bookModel.findOne({ _id: bookId, isDeleted: false, deletedAt: null }).lean();
+
+        const { review, reviewedBy, rating } = requestBody
+        const update = {}
+
+        if (requestBody.hasOwnProperty("reviewedBy")) {
+            if (!isValid(reviewedBy)) {
+                return res.status(400).send({ status: false, message: `enter a valid name like: "JOHN" ` })
+            }
+            update["reviewedBy"] = reviewedBy.trim();
+        }
+
+        if (requestBody.hasOwnProperty("rating")) {
+            if (!isValidRating(rating)) {
+                return res.status(400).send({ status: false, message: "rate the book from 1 to 5, in Number format" })
+            }
+            update["rating"] = rating
+        }
+        
+        if (requestBody.hasOwnProperty("review")) {
+            if (typeof (review) === "string" && review.trim().length > 0) {
+                update['review'] = review.trim()
+                
+            } else {
+                return res.status(400).send({ status: false, message: `enter review in valid format like : "awesome book must read" ` })
+            }
+        }
+        
+        const reviewUpdate = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: update }, { new: true })
+        const allReviewsOfThisBook = await reviewModel.findOne({ bookId: bookId, isDeleted: false });
+        bookByBookId["reviewsData"] = allReviewsOfThisBook;
+        
+        res.status(200).send({ status: true, message: "review updated successfully", data: bookByBookId })
+
+    } catch (err) {
+        res.status(500).send({ error: err.message })
+    }
+};
+
 
 const dreview = async function (req, res) {
     try {
@@ -58,49 +102,5 @@ const dreview = async function (req, res) {
 };
 
 
-const updateReview = async function (req, res) {
-    try {
-        const requestBody = req.body;
-        const bookId = req.params.bookId;
-        const reviewId = req.params.reviewId;
-        let bookByBookId = await bookModel.findOne({ _id: bookId, isDeleted: false, deletedAt: null }).lean();
-
-        const { review, reviewedBy, rating } = requestBody
-        const update = {}
-
-        if (requestBody.hasOwnProperty("reviewedBy")) {
-            if (!isValid(reviewedBy)) {
-                return res.status(400).send({ status: false, message: `enter a valid name like: "JOHN" ` })
-            }
-            update["reviewedBy"] = reviewedBy.trim()
-
-        }
-
-        if (requestBody.hasOwnProperty("rating")) {
-            if (!isValidRating(rating)) {
-                return res.status(400).send({ status: false, message: "rate the book from 1 to 5, in Number format" })
-            }
-            update["rating"] = rating
-        }
-
-        if (requestBody.hasOwnProperty("review")) {
-            if (typeof (review) === "string" && review.trim().length > 0) {
-                update['review'] = review.trim()
-
-            } else {
-                return res.status(400).send({ status: false, message: `enter review in valid format like : "awesome book must read" ` })
-            }
-        }
-
-        const reviewUpdate = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: update }, { new: true })
-        const allReviewsOfThisBook = await reviewModel.findOne({ bookId: bookId, isDeleted: false });
-        bookByBookId["reviewsData"] = allReviewsOfThisBook;
-
-        res.status(200).send({ status: true, message: "review updated successfully", data: bookByBookId })
-
-    } catch (err) {
-        res.status(500).send({ error: err.message })
-    }
-};
 
 module.exports = { createreview, updateReview, dreview };
