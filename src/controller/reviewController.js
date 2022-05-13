@@ -36,7 +36,15 @@ const createreview = async function (req, res) {
         }
 
         const saved = await reviewModel.create(review);
-        res.status(201).send({ status: true, msg: "review is created successfully.", data: saved });
+        const reviewCountIncrease = await bookModel.findOneAndUpdate({_id: bodyUser, isDeleted : false, deletedAt : null},  {$inc : {reviews : +1}}, {new : true})
+
+        const reviewsOfBook = await reviewModel.find({bookId: bodyUser, isDeleted : false})
+
+        const book = await bookModel.findOne({_id : bodyUser, isDeleted : false, deletedAt : null}).lean()
+
+        book["reviewsData"] = reviewsOfBook
+
+        res.status(201).send({ status: true, msg: "review is created successfully.", data: book });
     }
     catch (err) {
         res.status(500).send({ msg: err.message });
