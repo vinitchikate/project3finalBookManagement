@@ -123,10 +123,10 @@ const updateReview = async function (req, res) {
 
         const { review, reviewedBy, rating } = requestBody
 
-        // creating an empty object for adding all updates as per requestBody
+        
         const update = {}
 
-        // if requestBody has the mentioned property then validating that property and adding it to updates object
+        
         if (requestBody.hasOwnProperty("reviewedBy")) {
             if (!isValid(reviewedBy)) {
                 return res.status(400).send({ status: false, message: `enter a valid name like: "JOHN" ` })
@@ -158,7 +158,7 @@ const updateReview = async function (req, res) {
 
         const allReviewsOfThisBook = await reviewModel.findOne({ bookId: bookId, isDeleted: false })
 
-        // adding a temporary property inside book which consist all reviews of this book 
+        
         bookByBookId["reviewsData"] = allReviewsOfThisBook
         console.log(bookByBookId)
         console.log(allReviewsOfThisBook)
