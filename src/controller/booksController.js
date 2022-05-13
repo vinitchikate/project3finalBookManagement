@@ -30,6 +30,7 @@ const isValidObjectId = function (ObjectId) {
 const createBook = async function (req, res) {
     try {
         const book = req.body;
+        // book["userId"] = req.userId;
         let requestedUserId = req.userId;
         let bodyUser = book.userId;
         if (requestedUserId !== bodyUser) {
@@ -120,7 +121,7 @@ const getbookId = async function (req, res) {
     try {
         let bookId = req.params.bookId;
         if (bookId.length < 24 || bookId.length > 24) {
-            return res.status(400).send({ status: false, msg: "Plz Enter Valid Book Id" });
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
         }
 
         let bData = await bookModel.findById(bookId);
@@ -141,6 +142,10 @@ const getbookId = async function (req, res) {
 
 const updatebook = async function (req, res) {
     let bookId = req.params.bookId;
+    if (bookId.length < 24 || bookId.length > 24) {
+        return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+    }
+
     let body = req.body;
     const filterConditions = { isDeleted: false, deletedAt: null };
 
@@ -184,7 +189,7 @@ const updatebook = async function (req, res) {
             }
         }
         const updatedBook = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: filterConditions }, { new: true });
-        res.status(201).send({ status: true, message: "Blog successfully updated", data: updatedBook })
+        res.status(200).send({ status: true, message: "Blog successfully updated", data: updatedBook })
     } else {
         res.status(400).send({ status: false, msg: "Plz Enter Data In Body" });
     }
@@ -194,10 +199,13 @@ const updatebook = async function (req, res) {
 const deleteBooks = async function (req, res) {
     try {
         const bookId = req.params.bookId;
+        if (bookId.length < 24 || bookId.length > 24) {
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+        }
 
         const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false });
         if (!IsValidBookId) {
-            return res.status(404).send({ status: true, msg: "No book found." });
+            return res.status(404).send({ status: false, msg: "No book found." });
         }
 
         if (IsValidBookId.userId != req.userId) {        //validating that the userId from body is similar to the token
@@ -208,7 +216,7 @@ const deleteBooks = async function (req, res) {
         res.status(201).send({ status: true, msg: "Book deleted successfully", data: deletedDetails });
     }
     catch (err) {
-        res.status(500).send({ msg: err.message })
+        res.status(500).send({ msg: err.message });
     }
 };
 

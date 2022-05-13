@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const userModel = require("../models/userModel");
 const bookModel = require('../models/booksModel');
 
@@ -27,6 +28,17 @@ const isValidValue = function (value) {      //if the value is undefined or null
 const isValidDetails = function (requestBody) {
     return Object.keys(requestBody).length > 0;       // it checks, is there any key is available or not in request body
 };
+
+const isValidObjectId= function(ObjectId){
+
+    return mongoose.Types.ObjectId.isValid(ObjectId);
+ };
+
+const isValidarr = function(value){
+    if (typeof value === 'undefined' || value === null) return false        //it checks whether the value is null or undefined.
+    if (typeof value != 'number' && (value < 1 || value > 5)) return false    //it checks whether the string contain only space or not 
+    return true;
+}
 
 
 
@@ -146,8 +158,6 @@ const validBook = async function (req, res, next) {
         return res.status(401).send({ status: false, message: "Unauthorized access." })
     }
 
-    console.log(req.body.userId)
-    console.log(req.userId)
     if (!isValidValue(title)) {
         return res.status(400).send({ status: false, msg: "Please provide the Title" })
     }
@@ -166,6 +176,10 @@ const validBook = async function (req, res, next) {
     }
     if (!isValidValue(ISBN)) {
         return res.status(400).send({ status: false, msg: "Please provide the ISBN" })
+    }
+    
+    if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN))) {
+        return res.status(400).send({ status: false, msg: "Plz Enter Valid ISBN" });
     }
 
     const isDuplicateISBN = await bookModel.findOne({ ISBN: ISBN })
@@ -190,5 +204,40 @@ const validBook = async function (req, res, next) {
 };
 
 
+const validreview = async function (req, res, next) {
+    try {
+        const queryParams = req.query;
+        if (isValidRequestBody(queryParams)) {
+            return res.status(400).send({ status: false, message: "invalid request" });
+        }
 
-module.exports = { validRegister, validLogin, validBook };
+        const requestBody = req.body;
+        if (!isValidRequestBody(requestBody)) {
+            return res.status(400).send({ status: false, message: "content is required to create a new user" });
+        }
+
+        const { bookId, reviewedBy , rating , review } = requestBody;
+
+        if (!isValid(reviewedBy)) {
+            return res.status(400).send({ status: false, message: "reviewed by is required" });
+        }
+
+        if (!isValidObjectId(bookId)) {
+            return res.status(400).send({ status: false, message: "bookId  is invalid" });
+        }
+ 
+        if (!isValid(review)) {
+            return res.status(400).send({ status: false, message: "review  is required" });
+        }
+
+        if (!isValidarr(rating)) {
+            return res.status(400).send({ status: false, message: "review  is required" });
+        }
+
+         next()
+
+    }catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+}
+module.exports = { validRegister, validLogin, validBook , validreview };
