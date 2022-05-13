@@ -1,5 +1,3 @@
-const ReviewModel = require('../models/reviewModel')
-const BookModel = require('../models/booksModel')
 const mongoose = require('mongoose')
 const reviewModel = require('../models/reviewModel');
 const bookModel = require('../models/booksModel');
@@ -81,11 +79,11 @@ const updateReview = async function (req, res) {
         const bookId = req.params.bookId
         const reviewId = req.params.reviewId
 
-        // query params must be empty
+        
         if (isValidRequestBody(queryParams)) {
             return res.status(400).send({ status: false, message: "invalid request" })
         }
-        // request body must be empty
+      
         if (!isValidRequestBody(requestBody)) {
             return res.status(400).send({ status: false, message: "data is required for review update" })
         }
@@ -99,7 +97,7 @@ const updateReview = async function (req, res) {
         }
 
 
-        const bookByBookId = await BookModel.findOne({ _id: bookId, isDeleted: false, deletedAt: null }).lean()
+        const bookByBookId = await bookModel.findOne({ _id: bookId, isDeleted: false, deletedAt: null }).lean()
 
         if (!bookByBookId) {
             return res.status(404).send({ status: false, message: ` No Book found by ${bookId}` })
@@ -113,7 +111,7 @@ const updateReview = async function (req, res) {
             return res.status(400).send({ status: false, message: `enter a valid reviewId` })
         }
 
-        const reviewByReviewId = await ReviewModel.findOne({ _id: reviewId, isDeleted: false })
+        const reviewByReviewId = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
 
         if (!reviewByReviewId) {
             return res.status(404).send({ status: false, message: `No review found by ${reviewId} ` })
@@ -156,9 +154,9 @@ const updateReview = async function (req, res) {
             }
         }
 
-        const reviewUpdate = await ReviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: update }, { new: true })
+        const reviewUpdate = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: update }, { new: true })
 
-        const allReviewsOfThisBook = await ReviewModel.findOne({ bookId: bookId, isDeleted: false })
+        const allReviewsOfThisBook = await reviewModel.findOne({ bookId: bookId, isDeleted: false })
 
         // adding a temporary property inside book which consist all reviews of this book 
         bookByBookId["reviewsData"] = allReviewsOfThisBook
@@ -171,6 +169,5 @@ const updateReview = async function (req, res) {
         res.status(500).send({ error: err.message })
     }
 }
-
 
 module.exports = { createreview, dreview, updateReview };
