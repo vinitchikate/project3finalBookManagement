@@ -34,7 +34,7 @@ const createBook = async function (req, res) {
         let requestedUserId = req.userId;
         let bodyUser = book.userId;
         if (requestedUserId !== bodyUser) {
-            return res.status(401).send({ status: false, msg: "Book is not present" });
+            return res.status(401).send({ status: false, msg: "authorisation failed" });
         }
 
         const saved = await bookModel.create(book);
