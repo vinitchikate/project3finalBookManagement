@@ -18,12 +18,6 @@ const isValidSubcategory = function (value) {
     if (typeof value == "string" && value.trim().length > 0) return true;
     if (typeof value == "object" && Array.isArray(value) == true) return true;
 };
-const isValidTitle = function (title) {
-    return ["Mr", "mrs", "Miss"].indexOf(title) != -1;
-};
-const isValidObjectId = function (ObjectId) {
-    return mongoose.Types.ObjectId.isValid(ObjectId);
-};
 
 
 
@@ -121,7 +115,7 @@ const getbookId = async function (req, res) {
     try {
         let bookId = req.params.bookId;
         if (bookId.length < 24 || bookId.length > 24) {
-            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId in Params" });
         }
 
         let bData = await bookModel.findById(bookId);
@@ -144,7 +138,7 @@ const updatebook = async function (req, res) {
    try {
        let bookId = req.params.bookId;
     if (bookId.length < 24 || bookId.length > 24) {
-        return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+        return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId in Params" });
     }
 
     let body = req.body;
@@ -205,7 +199,7 @@ const deleteBooks = async function (req, res) {
     try {
         const bookId = req.params.bookId;
         if (bookId.length < 24 || bookId.length > 24) {
-            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
+            return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId in Params" });
         }
 
         const IsValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false });
