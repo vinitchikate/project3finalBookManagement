@@ -141,7 +141,8 @@ const getbookId = async function (req, res) {
 
 
 const updatebook = async function (req, res) {
-    let bookId = req.params.bookId;
+   try {
+       let bookId = req.params.bookId;
     if (bookId.length < 24 || bookId.length > 24) {
         return res.status(400).send({ status: false, msg: "Plz Enter Valid Length Of BookId Params" });
     }
@@ -192,6 +193,10 @@ const updatebook = async function (req, res) {
         res.status(200).send({ status: true, message: "Blog successfully updated", data: updatedBook })
     } else {
         res.status(400).send({ status: false, msg: "Plz Enter Data In Body" });
+    }
+        }
+    catch (err) {
+        res.status(500).send({ msg: err.message });
     }
 };
 
