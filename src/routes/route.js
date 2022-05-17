@@ -13,11 +13,11 @@ router.post("/register", valid.validRegister, userController.createuser);
 router.post("/login", valid.validLogin, userController.userLogin);
 
 // Books API
-router.post("/books", auth.authentication, valid.validBook, booksController.createBook);
+router.post("/books", auth.authentication, valid.validBook, booksController.createBook);//vinit
 router.get("/books", auth.authentication, booksController.booksList);
 router.get("/books/:bookId", auth.authentication, booksController.getbookId);
 router.put("/books/:bookId", auth.authentication, auth.authorization, booksController.updatebook);
-router.delete("/books/:bookId", auth.authentication, booksController.deleteBooks);
+router.delete("/books/:bookId", auth.authentication, booksController.deleteBooks);//vinit
 
 // Review APIs
 router.post("/books/:bookId/review", valid.validreview, reviewController.createreview);
