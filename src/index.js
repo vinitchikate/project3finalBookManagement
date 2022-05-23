@@ -5,10 +5,14 @@ const route = require('./routes/route');
 
 const app = express();
 
+const multer = require("multer");
+const { AppConfig } = require('aws-sdk');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer().any());
 
-mongoose.connect("Enter Connection String URI").then(() => console.log("MongoDB Is Connected")).catch(err => console.log(err));
+mongoose.connect("mongodb+srv://uranium:uranium@cluster0.pgmlm.mongodb.net/group49Database").then(() => console.log("MongoDB Is Connected")).catch(err => console.log(err));
 
 app.use('/', route);
 
